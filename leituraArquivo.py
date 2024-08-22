@@ -40,3 +40,4 @@ def leitura():
     # print("Arestas:", arestas)
     # print("Heurísticas:", heuristicas)
     print('\nArquivo Lido!\n')
+    return ponto_inicial, ponto_final, arestas, heuristicas
