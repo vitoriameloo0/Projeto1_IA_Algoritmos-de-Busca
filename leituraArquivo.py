@@ -6,7 +6,6 @@ def leitura():
     heuristicas = {}
 
     nomeArquivo = str(input('Digite o nome do arquivo: '))
-    print('\n')
 
     with open(nomeArquivo, 'r') as arquivo:
         for linha in arquivo:
