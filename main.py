@@ -1,8 +1,10 @@
-import leituraArquivo
+from leituraArquivo import leitura
 import melhoresSolucoes
 import pioresSolucoes
 import imprimir
 
+
+# Funcao de menu para as opcoes de melhores solucoes
 def melhorSolucao():
     opcao = 0
     while opcao != 3:
@@ -23,8 +25,10 @@ def melhorSolucao():
         print('=-='*10)
     print('\n'*2)
 
+
+# Funcao para as opcoes de piores solucoes
 def piorSolucao():
-    opcao = 0 
+    opcao = 0
     while opcao != 3:
         print('\nPiores Solucoes: ')
         print('1 - Busca em Profundidade')
@@ -44,7 +48,7 @@ def piorSolucao():
     print('\n'*2)
 
 
-
+# Prints para as funcoes principais
 print('INTELIGENCIA ARTIFICIAL')
 print('      PROJETO 1        ')
 print('ALGORITMOS DE BUSCA    \n')
@@ -59,7 +63,7 @@ while opcao != 4:
 
     opcao = int(input('Escolha uma opcao: '))
     if opcao == 1:
-        print('Falta Implementar')
+        leitura()
     elif opcao == 2:
         melhorSolucao()
     elif opcao == 3:
