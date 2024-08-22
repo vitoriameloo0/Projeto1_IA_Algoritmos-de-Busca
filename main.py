@@ -18,11 +18,11 @@ while opcao != 4:
 
     opcao = int(input('Escolha uma opção: '))
     if opcao == 1:
-        leitura()
+        ponto_inicial, ponto_final, arestas, heuristicas = leitura()
     elif opcao == 2:
-        melhorSolucao()
+        melhorSolucao(ponto_inicial, ponto_final, arestas, heuristicas)
     elif opcao == 3:
-        piorSolucao()
+        piorSolucao(ponto_inicial, ponto_final, arestas, heuristicas)
     elif opcao == 4:
         print('Finalizando...')
     else:
