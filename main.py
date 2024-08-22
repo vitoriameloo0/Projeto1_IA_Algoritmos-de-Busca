@@ -1,7 +1,7 @@
 from leituraArquivo import leitura
 from melhoresSolucoes import melhorSolucao
 from pioresSolucoes import piorSolucao
-import imprimir
+
 
 # Prints para as funcoes principais
 print('\nINTELIGENCIA ARTIFICIAL')
