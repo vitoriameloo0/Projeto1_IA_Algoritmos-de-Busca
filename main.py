@@ -1,3 +1,8 @@
+import leituraArquivo
+import melhoresSolucoes
+import pioresSolucoes
+import imprimir
+
 def melhorSolucao():
     opcao = 0
     while opcao != 3:
