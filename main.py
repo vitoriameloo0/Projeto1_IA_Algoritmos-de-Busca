@@ -8,6 +8,13 @@ print('\nINTELIGENCIA ARTIFICIAL')
 print('      PROJETO 1        ')
 print('ALGORITMOS DE BUSCA    \n')
 
+# Inicializacao das variaveis
+ponto_inicial = None
+ponto_final = None
+arestas = {}
+heuristicas = {}
+
+
 opcao = 0
 while opcao != 4:
     print('\nMenu de Opções: ')
@@ -20,9 +27,15 @@ while opcao != 4:
     if opcao == 1:
         ponto_inicial, ponto_final, arestas, heuristicas = leitura()
     elif opcao == 2:
-        melhorSolucao(ponto_inicial, ponto_final, arestas, heuristicas)
+        if ponto_inicial is None and ponto_final is None:
+            print('Sem arquivo de entrada...')
+        else:
+            melhorSolucao(ponto_inicial, ponto_final, arestas, heuristicas)
     elif opcao == 3:
-        piorSolucao(ponto_inicial, ponto_final, arestas, heuristicas)
+        if ponto_inicial is None and ponto_final is None:
+            print('Sem arquivo de entrada...')
+        else:
+            piorSolucao(ponto_inicial, ponto_final, arestas, heuristicas)
     elif opcao == 4:
         print('Finalizando...')
     else:
