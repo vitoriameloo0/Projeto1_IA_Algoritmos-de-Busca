@@ -1,154 +1,116 @@
 # Importa o módulo heapq para implementar a fila de prioridade (min-heap)
 import heapq
+import time
 
 
 def a_star(ponto_inicial, ponto_final, arestas, heuristicas):
-    # Inicializa o open_set como uma fila de prioridade e adiciona o ponto inicial com F = 0
-    open_set = []
-    heapq.heappush(open_set, (0, ponto_inicial))  # (F, nó)
+    # Início da contagem de tempo
+    start_time = time.time()
 
-    # Inicializa o closed_set como um conjunto vazio (nós já explorados)
-    closed_set = set()
+    # Fila de prioridade (heap)
+    fila = []
+    heapq.heappush(
+        fila, (0 + heuristicas[(ponto_inicial, ponto_final)], 0, ponto_inicial, []))
 
-    # Inicializa g_score com o custo do ponto inicial (que é 0)
-    g_score = {ponto_inicial: 0}
+    # Conjunto de vértices já visitados
+    visitados = set()
 
-    # Inicializa f_score com a soma do g_score e da heurística para o ponto inicial
-    f_score = {ponto_inicial: heuristicas.get(
-        (ponto_inicial, ponto_final), float('inf'))}
+    iteracao = 1
 
-    # Inicializa um dicionário para armazenar o caminho (de onde viemos)
-    came_from = {}
+    while fila:
+        # Removendo o nó com menor custo total (g + h)
+        _, custo_atual, vertice_atual, caminho = heapq.heappop(fila)
 
-    # Inicializa variáveis de controle para contagem de iterações e medida de desempenho
-    iteracao = 0
-    nos_expandidos = 0  # Medida de desempenho: Número de nós expandidos
+        # Atualizar o caminho
+        caminho = caminho + [vertice_atual]
 
-    # Loop principal do algoritmo A*
-    while open_set:
-        iteracao += 1  # Incrementa o contador de iterações
-        # Exibir o estado atual da fila (open_set)
-        print(f"Iteração {iteracao}:")
-        print("Fila:", end=" ")
-        for f, vertice in open_set:
-            print(
-                f"({vertice}: {g_score[vertice]} + {f - g_score[vertice]} = {f})", end=" ")
-        print(f"\nMedida de otimidade (nós expandidos): {nos_expandidos}\n")
-
-        # Remove o nó com o menor F (custo total estimado) da fila de prioridade
-        _, current = heapq.heappop(open_set)
-
-        # Incrementa o número de nós expandidos
-        nos_expandidos += 1
-
-        # Se o nó atual é o ponto final, reconstruímos e exibimos o caminho encontrado
-        if current == ponto_final:
-            print("Fim da execução")
-            print(f"Distância: {g_score[ponto_final]}")
-            print("Caminho:", " – ".join(reconstruir_caminho(came_from, current)))
-            print(f"Medida de otimidade (nós expandidos): {nos_expandidos}")
+        # Verificar se chegou ao destino
+        if vertice_atual == ponto_final:
+            # Medida de desempenho: tempo total de execução até o momento
+            tempo_execucao = time.time() - start_time
+            print(f"\nFim da execução\nDistância: {custo_atual}")
+            print("Caminho:", " – ".join(caminho))
+            print(f"Medida de desempenho: {tempo_execucao:.2f}")
             return
 
-        # Adiciona o nó atual ao closed_set (marcando-o como explorado)
-        closed_set.add(current)
+        # Marcar o nó atual como visitado
+        visitados.add(vertice_atual)
 
-        # Explora os vizinhos do nó atual
-        for vizinho, peso in arestas.get(current, []):
-            if vizinho in closed_set:
-                continue  # Se o vizinho já foi explorado, pula para o próximo
+        # Expandir os nós vizinhos
+        for vizinho, custo in arestas.get(vertice_atual, []):
+            if vizinho not in visitados:
+                g = custo_atual + custo
+                h = heuristicas.get((vizinho, ponto_final), float('inf'))
+                f = g + h
+                heapq.heappush(fila, (f, g, vizinho, caminho))
 
-            # Calcula o custo tentativo para chegar ao vizinho via o nó atual
-            tentative_g_score = g_score[current] + peso
+        # Medida de desempenho: tempo atual de execução
+        tempo_execucao = time.time() - start_time
 
-            # Se o caminho via o nó atual é melhor, atualiza as informações do vizinho
-            if tentative_g_score < g_score.get(vizinho, float('inf')):
-                # Armazena de onde viemos para reconstruir o caminho
-                came_from[vizinho] = current
-                # Atualiza o custo real do caminho até o vizinho
-                g_score[vizinho] = tentative_g_score
-                # Atualiza o custo total estimado
-                f_score[vizinho] = g_score[vizinho] + \
-                    heuristicas.get((vizinho, ponto_final), float('inf'))
+        # Imprimir estado da fila
+        fila_str = " ".join([f"({v}: {g} + {heuristicas.get((v, ponto_final), float('inf'))} = {f})"
+                             for f, g, v, _ in fila])
+        print(f"\nIteração {iteracao}:")
+        print(f"Fila: {fila_str}")
+        print(f"Medida de desempenho: {tempo_execucao:.2f}")
 
-                # Se o vizinho ainda não está na fila, adiciona-o
-                if vizinho not in [i[1] for i in open_set]:
-                    heapq.heappush(open_set, (f_score[vizinho], vizinho))
+        iteracao += 1
 
-    # Se o loop terminar e o ponto final não foi encontrado, exibe uma mensagem de erro
-    print("Fim da execução: Nenhum caminho encontrado")
-    print(f"Medida de otimidade (nós expandidos): {nos_expandidos}")
-    return None
+    # Se o algoritmo terminar sem encontrar o caminho
+    print("Caminho não encontrado.")
 
 
 def busca_custo_uniforme(ponto_inicial, ponto_final, arestas):
-    # Inicializa o open_set como uma fila de prioridade e adiciona o ponto inicial com G = 0
-    open_set = []
-    heapq.heappush(open_set, (0, ponto_inicial))  # (G, nó)
+    # Início da contagem de tempo
+    start_time = time.time()
 
-    # Inicializa o closed_set como um conjunto vazio (nós já explorados)
-    closed_set = set()
+    # Fila de prioridade (heap)
+    fila = []
+    heapq.heappush(fila, (0, ponto_inicial, []))
 
-    # Inicializa g_score com o custo do ponto inicial (que é 0)
-    g_score = {ponto_inicial: 0}
+    # Conjunto de vértices já visitados
+    visitados = set()
 
-    # Inicializa um dicionário para armazenar o caminho (de onde viemos)
-    came_from = {}
+    iteracao = 1
 
-    iteracao = 0
-    nos_expandidos = 0  # Medida de otimidade: número de nós expandidos
+    while fila:
+        # Removendo o nó com menor custo total (g)
+        custo_atual, vertice_atual, caminho = heapq.heappop(fila)
 
-    # Loop principal do algoritmo de busca de custo uniforme
-    while open_set:
-        iteracao += 1  # Incrementa o contador de iterações
+        # Atualizar o caminho
+        caminho = caminho + [vertice_atual]
 
-        # Exibir o estado atual da fila (open_set) **ANTES** da remoção
-        print(f"Iteração {iteracao}:")
-        print("Fila:", end=" ")
-        for g, vertice in open_set:
-            print(f"({vertice}: {g_score[vertice]})", end=" ")
-        print(f"\nMedida de otimidade (nós expandidos): {nos_expandidos}\n")
-
-        # Remove o nó com o menor G (custo acumulado) da fila de prioridade
-        g, current = heapq.heappop(open_set)
-
-        # Incrementa o número de nós expandidos
-        nos_expandidos += 1
-
-        # Se o nó atual é o ponto final, reconstruímos e exibimos o caminho encontrado
-        if current == ponto_final:
-            caminho = reconstruir_caminho(came_from, current)
-            print("Fim da execução")
-            print(f"Distância: {g_score[ponto_final]}")
+        # Verificar se chegou ao destino
+        if vertice_atual == ponto_final:
+            # Medida de desempenho: tempo total de execução até o momento
+            tempo_execucao = time.time() - start_time
+            print(f"\nFim da execução\nDistância: {custo_atual}")
             print("Caminho:", " – ".join(caminho))
-            print(f"Medida de otimidade (nós expandidos): {nos_expandidos}")
-            return caminho, g_score[ponto_final], nos_expandidos
+            print(f"Medida de desempenho: {tempo_execucao:.2f}")
+            return
 
-        # Adiciona o nó atual ao closed_set (marcando-o como explorado)
-        closed_set.add(current)
+        # Marcar o nó atual como visitado
+        visitados.add(vertice_atual)
 
-        # Explora os vizinhos do nó atual
-        for vizinho, peso in arestas.get(current, []):
-            if vizinho in closed_set:
-                continue  # Se o vizinho já foi explorado, pula para o próximo
+        # Expandir os nós vizinhos
+        for vizinho, custo in arestas.get(vertice_atual, []):
+            if vizinho not in visitados:
+                g = custo_atual + custo
+                heapq.heappush(fila, (g, vizinho, caminho))
 
-            # Calcula o custo tentativo para chegar ao vizinho via o nó atual
-            tentative_g_score = g_score[current] + peso
+        # Medida de desempenho: tempo atual de execução
+        tempo_execucao = time.time() - start_time
 
-            # Se o caminho via o nó atual é melhor, atualiza as informações do vizinho
-            if tentative_g_score < g_score.get(vizinho, float('inf')):
-                # Armazena de onde viemos para reconstruir o caminho
-                came_from[vizinho] = current
-                # Atualiza o custo real do caminho até o vizinho
-                g_score[vizinho] = tentative_g_score
+        # Imprimir estado da fila
+        fila_str = " ".join([f"({v}: {g} = {g})" for g, v, _ in fila])
+        print(f"\nIteração {iteracao}:")
+        print(f"Fila: {fila_str}")
+        print(f"Medida de desempenho: {tempo_execucao:.2f}")
 
-                # Se o vizinho ainda não está na fila, adiciona-o
-                if vizinho not in [i[1] for i in open_set]:
-                    heapq.heappush(open_set, (g_score[vizinho], vizinho))
+        iteracao += 1
 
-    # Se o loop terminar e o ponto final não foi encontrado, exibe uma mensagem de erro
-    print("Fim da execução: Nenhum caminho encontrado")
-    print(f"Medida de otimidade (nós expandidos): {nos_expandidos}")
-    return None
+    # Se o algoritmo terminar sem encontrar o caminho
+    print("Caminho não encontrado.")
 
 
 def reconstruir_caminho(came_from, current):
