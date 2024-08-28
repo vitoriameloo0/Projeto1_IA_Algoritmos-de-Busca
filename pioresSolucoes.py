@@ -1,96 +1,108 @@
 from collections import deque
+import time
 
 
+# Funcao do algoritmo de busca em profundidade
 def busca_em_profundidade(ponto_inicial, ponto_final, arestas):
-    # Pilha usada para armazenar o caminho a ser explorado (stack)
-    # Cada elemento é (nó_atual, caminho)
-    stack = [(ponto_inicial, [ponto_inicial])]
-    visited = set()  # Conjunto de nós já visitados
+    # Início da contagem de tempo
+    start_time = time.time()
 
-    nos_expandidos = 0  # Medida de otimidade: número de nós expandidos
-    iteracao = 0  # Contador de iterações
+    # Pilha para simular a recursão da DFS
+    pilha = [(ponto_inicial, [ponto_inicial], 0)]
 
-    # Loop principal do algoritmo de busca em profundidade
-    while stack:
-        iteracao += 1  # Incrementa o contador de iterações
+    # Conjunto de vértices já visitados (para evitar ciclos)
+    visitados = set()
 
-        # Exibir o estado atual da pilha (stack) **ANTES** da remoção
-        print(f"Iteração {iteracao}:")
-        print("Pilha:", end=" ")
-        for vertice, caminho in stack:
-            print(f"({vertice}: {caminho})", end=" ")
-        print(f"\nMedida de otimidade (nós expandidos): {nos_expandidos}\n")
+    iteracao = 1
 
-        # Remove o último elemento da pilha
-        current, caminho = stack.pop()
-        nos_expandidos += 1
+    while pilha:
+        # Retirar o elemento do topo da pilha (último inserido)
+        vertice_atual, caminho, custo_atual = pilha.pop()
 
-        # Se o nó atual é o ponto final, exibe o caminho encontrado
-        if current == ponto_final:
-            print("Fim da execução")
-            print("Caminho encontrado:", " – ".join(caminho))
-            print(f"Medida de otimidade (nós expandidos): {nos_expandidos}")
-            return caminho, nos_expandidos
+        # Verificar se chegou ao destino
+        if vertice_atual == ponto_final:
+            # Medida de desempenho: tempo total de execução até o momento
+            tempo_execucao = time.time() - start_time
+            print(f"\nFim da execução\nDistância: {custo_atual}")
+            print("Caminho:", " – ".join(caminho))
+            print(f"Medida de desempenho: {tempo_execucao:.2f}")
+            return
 
-        # Marca o nó atual como visitado
-        visited.add(current)
+        # Marcar o nó atual como visitado
+        visitados.add(vertice_atual)
 
-        # Explora os vizinhos do nó atual
-        for vizinho, _ in arestas.get(current, []):
-            if vizinho not in visited:
-                stack.append((vizinho, caminho + [vizinho]))
+        # Expandir os nós vizinhos (processar na ordem inversa para simular recursão)
+        for vizinho, custo in reversed(arestas.get(vertice_atual, [])):
+            if vizinho not in visitados:
+                pilha.append(
+                    (vizinho, caminho + [vizinho], custo_atual + custo))
 
-    # Se o loop terminar e o ponto final não foi encontrado, exibe uma mensagem de erro
-    print("Fim da execução: Nenhum caminho encontrado")
-    print(f"Medida de otimidade (nós expandidos): {nos_expandidos}")
-    return None
+        # Medida de desempenho: tempo atual de execução
+        tempo_execucao = time.time() - start_time
+
+        # Imprimir estado da pilha
+        pilha_str = " ".join(
+            [f"({v}: {custo} = {custo_atual + custo})" for v, _, custo_atual in pilha])
+        print(f"\nIteração {iteracao}:")
+        print(f"Pilha: {pilha_str}")
+        print(f"Medida de desempenho: {tempo_execucao:.2f}")
+
+        iteracao += 1
+
+    # Se o algoritmo terminar sem encontrar o caminho
+    print("Caminho não encontrado.")
 
 
 def busca_em_largura(ponto_inicial, ponto_final, arestas):
-    # Fila usada para armazenar o caminho a ser explorado (queue)
-    # Cada elemento é (nó_atual, caminho)
-    queue = deque([(ponto_inicial, [ponto_inicial])])
-    visited = set()  # Conjunto de nós já visitados
+    # Início da contagem de tempo
+    start_time = time.time()
 
-    nos_expandidos = 0  # Medida de otimidade: número de nós expandidos
-    iteracao = 0  # Contador de iterações
+    # Fila para a BFS
+    fila = deque([(ponto_inicial, [ponto_inicial], 0)])
 
-    # Loop principal do algoritmo de busca em largura
-    while queue:
-        iteracao += 1  # Incrementa o contador de iterações
+    # Conjunto de vértices já visitados (para evitar ciclos)
+    visitados = set()
 
-        # Exibir o estado atual da fila (queue) **ANTES** da remoção
-        print(f"Iteração {iteracao}:")
-        print("Fila:", end=" ")
-        for vertice, caminho in queue:
-            print(f"({vertice}: {caminho})", end=" ")
-        print(f"\nMedida de otimidade (nós expandidos): {nos_expandidos}\n")
+    iteracao = 1
 
-        # Remove o primeiro elemento da fila
-        current, caminho = queue.popleft()
-        nos_expandidos += 1
+    while fila:
+        # Retirar o elemento da frente da fila (primeiro inserido)
+        vertice_atual, caminho, custo_atual = fila.popleft()
 
-        # Se o nó atual é o ponto final, exibe o caminho encontrado
-        if current == ponto_final:
-            print("Fim da execução")
-            print("Caminho encontrado:", " – ".join(caminho))
-            print(f"Medida de otimidade (nós expandidos): {nos_expandidos}")
-            return caminho, nos_expandidos
+        # Verificar se chegou ao destino
+        if vertice_atual == ponto_final:
+            # Medida de desempenho: tempo total de execução até o momento
+            tempo_execucao = time.time() - start_time
+            print(f"\nFim da execução\nDistância: {custo_atual}")
+            print("Caminho:", " – ".join(caminho))
+            print(f"Medida de desempenho: {tempo_execucao:.2f}")
+            return
 
-        # Marca o nó atual como visitado
-        visited.add(current)
+        # Marcar o nó atual como visitado
+        visitados.add(vertice_atual)
 
-        # Explora os vizinhos do nó atual
-        for vizinho, _ in arestas.get(current, []):
-            if vizinho not in visited:
-                # Marca vizinho como visitado para evitar enfileirar múltiplas vezes
-                visited.add(vizinho)
-                queue.append((vizinho, caminho + [vizinho]))
+        # Expandir os nós vizinhos
+        for vizinho, custo in arestas.get(vertice_atual, []):
+            if vizinho not in visitados:
+                fila.append(
+                    (vizinho, caminho + [vizinho], custo_atual + custo))
+                # Marca vizinho como visitado para evitar múltiplas enfileiramentos
+                visitados.add(vizinho)
 
-    # Se o loop terminar e o ponto final não foi encontrado, exibe uma mensagem de erro
-    print("Fim da execução: Nenhum caminho encontrado")
-    print(f"Medida de otimidade (nós expandidos): {nos_expandidos}")
-    return None
+        # Medida de desempenho: tempo atual de execução
+        tempo_execucao = time.time() - start_time
+
+        # Imprimir estado da fila
+        fila_str = " ".join(
+            [f"({v}: {custo} = {custo_atual + custo})" for v, _, custo_atual in fila])
+        print(f"\nIteração {iteracao}:")
+        print(f"Fila: {fila_str}")
+        print(f"Medida de desempenho: {tempo_execucao:.2f}")
+
+        iteracao += 1
+
+    # Se o algoritmo terminar sem encontrar o caminho
+    print("Caminho não encontrado.")
 
 # Funcao para as opcoes de piores solucoes
 
