@@ -14,6 +14,9 @@ def a_star(ponto_inicial, ponto_final, adjacencias, heuristicas):
     visitados = set()
 
     iteracao = 0
+    soma_g = 0
+    soma_h = 0
+
     while fila:
         iteracao += 1
         # Remover o nó com menor f(n) da fila
@@ -21,12 +24,14 @@ def a_star(ponto_inicial, ponto_final, adjacencias, heuristicas):
 
         # Se o nó final foi alcançado, terminamos
         if atual == ponto_final:
-            print(f"Fim da execução\nDistância: {g_atual}\nCaminho: {
-                  ' – '.join(caminho)}\nMedida de desempenho: {g_atual / iteracao:.2f}")
+            print(f"\nFim da execução\nDistância: {g_atual}\nCaminho: {' – '.join(
+                caminho)}\nMedida de desempenho: {(soma_g + soma_h) / len(visitados):.2f}")
             return
 
         # Marcar como visitado
         visitados.add(atual)
+        soma_g += g_atual
+        soma_h += heuristicas.get((atual, ponto_final), float('inf'))
 
         # Expansão dos vizinhos
         for vizinho, custo in adjacencias.get(atual, []):
@@ -42,7 +47,7 @@ def a_star(ponto_inicial, ponto_final, adjacencias, heuristicas):
         fila_estado = ' '.join(
             [f"({n}: {g} + {heuristicas.get((n, ponto_final), float('inf'))} = {f})" for f, g, n, c in fila])
         print(f"Iteração {iteracao}:\nFila: {
-              fila_estado}\nMedida de desempenho: {g_atual / iteracao:.2f}")
+              fila_estado}\nMedida de desempenho: {(soma_g + soma_h) / len(visitados):.2f}\n")
 
 
 def busca_custo_uniforme(ponto_inicial, ponto_final, arestas):
@@ -107,9 +112,8 @@ def reconstruir_caminho(came_from, current):
     caminho.reverse()   # Inverte o caminho para que ele vá do ponto inicial ao final
     return caminho
 
+
 # Funcao de menu para as opcoes de melhores solucoes
-
-
 def melhorSolucao(ponto_inicial, ponto_final, arestas, heuristicas):
     opcao = 0
     while opcao != 3:
