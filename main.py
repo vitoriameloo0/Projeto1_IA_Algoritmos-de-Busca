@@ -25,7 +25,12 @@ while opcao != 4:
 
     opcao = int(input('Escolha uma opção: '))
     if opcao == 1:
-        ponto_inicial, ponto_final, arestas, heuristicas = leitura()
+        ponto_inicial, ponto_final, arestas, heuristicas = leitura(
+            ponto_inicial, ponto_final, arestas, heuristicas)
+        # print("\nPonto Inicial:", ponto_inicial)
+        # print("Ponto Final:", ponto_final)
+        # print("Arestas:", arestas)
+        # print("Heurísticas:", heuristicas)
     elif opcao == 2:
         if ponto_inicial is None and ponto_final is None:
             print('Sem arquivo de entrada...')
