@@ -1,10 +1,5 @@
 # Funcao para fazer a leitura do arquivo
-def leitura():
-    ponto_inicial = None
-    ponto_final = None
-    arestas = {}
-    heuristicas = {}
-
+def leitura(ponto_inicial, ponto_final, arestas, heuristicas):
     nomeArquivo = str(input('Digite o nome do arquivo: '))
     try:
         with open(nomeArquivo, 'r') as arquivo:
