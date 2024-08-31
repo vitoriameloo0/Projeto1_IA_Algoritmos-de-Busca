@@ -3,55 +3,46 @@ import heapq
 import time
 
 
-def a_estrela(ponto_inicial, ponto_final, conexoes, heuristicas):
-    # Fila de prioridade (open list)
+def a_star(ponto_inicial, ponto_final, adjacencias, heuristicas):
+    # Inicialização da fila de prioridade e custos
     fila = []
-    # Usado para reconstruir o caminho
-    antecessores = {}
-    # Custo acumulado (g)
-    g_score = {ponto_inicial: 0}
-    # Heurística total (f = g + h)
-    f_score = {ponto_inicial: heuristicas[ponto_inicial]}
-    # Contador de nós explorados
-    nos_explorados = 0
+    # Modificação para acessar corretamente a heurística do ponto inicial
+    heuristica_inicial = heuristicas.get(
+        (ponto_inicial, ponto_final), float('inf'))
+    heapq.heappush(fila, (heuristica_inicial, 0,
+                   ponto_inicial, [ponto_inicial]))
+    visitados = set()
 
-    # Adiciona o ponto inicial à fila de prioridade
-    heapq.heappush(fila, (f_score[ponto_inicial], ponto_inicial))
-
+    iteracao = 0
     while fila:
-        # Pega o nó com o menor valor de f
-        _, atual = heapq.heappop(fila)
-        nos_explorados += 1  # Incrementa o contador de nós explorados
+        iteracao += 1
+        # Remover o nó com menor f(n) da fila
+        f_atual, g_atual, atual, caminho = heapq.heappop(fila)
 
-        # Se chegamos ao ponto final, reconstrói o caminho
+        # Se o nó final foi alcançado, terminamos
         if atual == ponto_final:
-            caminho = []
-            while atual in antecessores:
-                caminho.append(atual)
-                atual = antecessores[atual]
-            caminho.append(ponto_inicial)
-            caminho.reverse()
-            return caminho, g_score[ponto_final], nos_explorados
+            print(f"Fim da execução\nDistância: {g_atual}\nCaminho: {
+                  ' – '.join(caminho)}\nMedida de desempenho: {g_atual / iteracao:.2f}")
+            return
 
-        # Explora os vizinhos
-        for vizinho, custo in conexoes.get(atual, []):
-            tent_g_score = g_score[atual] + custo
-            if tent_g_score < g_score.get(vizinho, float('inf')):
-                # Este caminho é melhor que qualquer outro já visto
-                antecessores[vizinho] = atual
-                g_score[vizinho] = tent_g_score
-                f_score[vizinho] = tent_g_score + heuristicas[vizinho]
-                # Adiciona ou atualiza o vizinho na fila de prioridade
-                heapq.heappush(fila, (f_score[vizinho], vizinho))
+        # Marcar como visitado
+        visitados.add(atual)
 
-        # Exibe o estado atual da fila de prioridade e a pontuação g
-        print(f"Estado da fila: {fila}")
-        print(f"g_score: {g_score}")
-        print(f"f_score: {f_score}")
-        print("Caminho encontrado:", caminho)
-        print("Custo total:", custo)
-        print("Nós explorados:", nos_explorados)
-        print("---")
+        # Expansão dos vizinhos
+        for vizinho, custo in adjacencias.get(atual, []):
+            if vizinho not in visitados:
+                g_vizinho = g_atual + custo
+                heuristica_vizinho = heuristicas.get(
+                    (vizinho, ponto_final), float('inf'))
+                f_vizinho = g_vizinho + heuristica_vizinho
+                heapq.heappush(fila, (f_vizinho, g_vizinho,
+                               vizinho, caminho + [vizinho]))
+
+        # Estado atual da fila e medida de desempenho
+        fila_estado = ' '.join(
+            [f"({n}: {g} + {heuristicas.get((n, ponto_final), float('inf'))} = {f})" for f, g, n, c in fila])
+        print(f"Iteração {iteracao}:\nFila: {
+              fila_estado}\nMedida de desempenho: {g_atual / iteracao:.2f}")
 
 
 def busca_custo_uniforme(ponto_inicial, ponto_final, arestas):
@@ -130,7 +121,7 @@ def melhorSolucao(ponto_inicial, ponto_final, arestas, heuristicas):
         opcao = int(input('Escolha uma opção: '))
         print('\n')
         if opcao == 1:
-            a_estrela(ponto_inicial, ponto_final, arestas, heuristicas)
+            a_star(ponto_inicial, ponto_final, arestas, heuristicas)
         elif opcao == 2:
             busca_custo_uniforme(ponto_inicial, ponto_final, arestas)
         elif opcao == 3:
