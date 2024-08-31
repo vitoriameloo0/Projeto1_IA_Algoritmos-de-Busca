@@ -1,4 +1,4 @@
-ponto inicial(Arad).
+ponto_inicial(Arad).
 ponto_final(Bucharest).
 pode_ir(Arad,Sibiu,140).
 pode_ir(Arad,Timisoara,118).
