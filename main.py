@@ -46,7 +46,7 @@ def main():
         else:
             print('Opcao Invalida. Tente novamente')
 
-        print('\n')
+        # print('\n')
         print('=-='*10)
     print('Programa encerrado!\n')
 
