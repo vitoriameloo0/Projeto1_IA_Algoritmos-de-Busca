@@ -32,7 +32,7 @@ def leitura(ponto_inicial, ponto_final, arestas, heuristicas):
                     valor_h = int(partes[2])
                     heuristicas[(vertice1, vertice2)] = valor_h
 
-        print('\nArquivo Lido!\n')
+        print('\nArquivo Lido!')
         return ponto_inicial, ponto_final, arestas, heuristicas
     except FileNotFoundError:
         print(f"Erro: O arquivo não foi encontrado.")
