@@ -4,6 +4,8 @@ import time
 
 
 def a_star(ponto_inicial, ponto_final, adjacencias, heuristicas):
+    # Iniciar a medição de tempo
+    tempo_inicio = time.perf_counter()
     # Inicialização da fila de prioridade e custos
     fila = []
     # Modificação para acessar corretamente a heurística do ponto inicial
@@ -14,24 +16,26 @@ def a_star(ponto_inicial, ponto_final, adjacencias, heuristicas):
     visitados = set()
 
     iteracao = 0
-    soma_g = 0
-    soma_h = 0
 
     while fila:
         iteracao += 1
         # Remover o nó com menor f(n) da fila
+        tempo_iteracao_inicio = time.perf_counter()
+
         f_atual, g_atual, atual, caminho = heapq.heappop(fila)
 
         # Se o nó final foi alcançado, terminamos
         if atual == ponto_final:
-            print(f"\nFim da execução\nDistância: {g_atual}\nCaminho: {' – '.join(
-                caminho)}\nMedida de desempenho: {(soma_g + soma_h) / len(visitados):.2f}")
+            # Terminar a medição de tempo
+            tempo_fim = time.perf_counter()
+            tempo_total = (tempo_fim - tempo_inicio)*1000
+
+            print(f"\nFim da execução\nDistância: {g_atual}\nCaminho: {
+                  ' – '.join(caminho)}\nTempo de execução total: {tempo_total:2.3f} ms")
             return
 
         # Marcar como visitado
         visitados.add(atual)
-        soma_g += g_atual
-        soma_h += heuristicas.get((atual, ponto_final), float('inf'))
 
         # Expansão dos vizinhos
         for vizinho, custo in adjacencias.get(atual, []):
@@ -46,8 +50,13 @@ def a_star(ponto_inicial, ponto_final, adjacencias, heuristicas):
         # Estado atual da fila e medida de desempenho
         fila_estado = ' '.join(
             [f"({n}: {g} + {heuristicas.get((n, ponto_final), float('inf'))} = {f})" for f, g, n, c in fila])
+
+        # Capturar o tempo de fim da iteração e calcular a duração da iteração
+        tempo_iteracao_fim = time.perf_counter()
+        tempo_iteracao = (tempo_iteracao_fim - tempo_iteracao_inicio)*1000
+
         print(f"Iteração {iteracao}:\nFila: {
-              fila_estado}\nMedida de desempenho: {(soma_g + soma_h) / len(visitados):.2f}\n")
+              fila_estado}\nTempo de execução: {tempo_iteracao:2.3f} ms\n")
 
 
 def busca_custo_uniforme(ponto_inicial, ponto_final, arestas):
