@@ -1,6 +1,6 @@
 from leituraArquivo import leitura
-from melhoresSolucoes import melhorSolucao
-from pioresSolucoes import piorSolucao
+from melhoresSolucoes import a_estrela
+from pioresSolucoes import busca_profundidade
 
 
 def main():
@@ -19,8 +19,8 @@ def main():
     while opcao != 4:
         print('Menu de Opções: ')
         print('1 - Entrada de Arquivo')
-        print('2 - Algoritmos de Melhores Soluções')
-        print('3 - Algoritmos de Piores Soluções')
+        print('2 - Algoritmo de Melhor Solução - A*')
+        print('3 - Algoritmo de Pior Solução - Busca em Profundidade')
         print('4 - Sair do Programa')
 
         opcao = int(input('Escolha uma opção: '))
@@ -31,18 +31,18 @@ def main():
             if ponto_inicial is None and ponto_final is None:
                 print('Sem arquivo de entrada...')
             else:
-                melhorSolucao(ponto_inicial, ponto_final, arestas, heuristicas)
+                a_estrela(ponto_inicial, ponto_final, arestas, heuristicas)
         elif opcao == 3:
             if ponto_inicial is None and ponto_final is None:
                 print('Sem arquivo de entrada...')
             else:
-                piorSolucao(ponto_inicial, ponto_final, arestas, heuristicas)
+                busca_profundidade(ponto_inicial, ponto_final, arestas)
         elif opcao == 4:
             print('Finalizando...')
         else:
             print('Opcao Invalida. Tente novamente')
 
-        # print('\n')
+        #print('\n')
         print('=-='*10)
     print('Programa encerrado!\n')
 
